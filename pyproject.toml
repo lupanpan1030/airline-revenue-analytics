@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "airline-revenue-analytics"
+version = "0.1.0"
+description = "Airline revenue analytics pipelines (booking and segment)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Ethan" }]
+dependencies = [
+  "numpy",
+  "pandas",
+  "matplotlib",
+  "scikit-learn",
+  "scipy",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+notebook = ["statsmodels", "jupyter"]
+parquet = ["pyarrow"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

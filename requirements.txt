@@ -1,0 +1,6 @@
+# Core runtime dependencies (prefer: pip install -e .)
+numpy
+pandas
+matplotlib
+scikit-learn
+scipy
