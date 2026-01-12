@@ -25,6 +25,7 @@ from airline_revenue_analytics.modeling.train import (
     make_preprocess,
     linear_pipeline,
     tree_pipeline,
+    forest_pipeline,
 )
 from airline_revenue_analytics.modeling.eval import evaluate
 from airline_revenue_analytics.viz.charts import apply_style, PLOT_COLORS
@@ -42,6 +43,22 @@ def _ensure_tables(tables: dict):
 
 def _has_pyarrow() -> bool:
     return importlib.util.find_spec("pyarrow") is not None
+
+
+def _amount_metrics(y_true_log: pd.Series, y_pred_log: pd.Series) -> dict[str, float]:
+    """Compute approximate amount-scale errors from log targets. (基于 log 的近似金额尺度误差)"""
+    with np.errstate(over="ignore", invalid="ignore"):
+        y_true = np.exp(np.asarray(y_true_log))
+        y_pred = np.exp(np.asarray(y_pred_log))
+    mask = np.isfinite(y_true) & np.isfinite(y_pred) & (y_true > 0)
+    if not np.any(mask):
+        return {"MAE_amount": np.nan, "RMSE_amount": np.nan, "MAPE_amount": np.nan}
+    y_true = y_true[mask]
+    y_pred = y_pred[mask]
+    mae = float(np.mean(np.abs(y_true - y_pred)))
+    rmse = float(np.sqrt(np.mean((y_true - y_pred) ** 2)))
+    mape = float(np.mean(np.abs((y_true - y_pred) / y_true)) * 100.0)
+    return {"MAE_amount": mae, "RMSE_amount": rmse, "MAPE_amount": mape}
 
 
 def main(write_parquet: bool = True):
@@ -177,14 +194,17 @@ def main(write_parquet: bool = True):
     models = {
         "LinearRegression": linear_pipeline(pre),
         "DecisionTree": tree_pipeline(pre),
+        "RandomForest": forest_pipeline(pre),
     }
 
     rows = []
     fitted = {}
     for name, model in models.items():
         model.fit(X_train, y_train)
-        metrics = evaluate(model, X_test, y_test)
-        rows.append({"model": name, **metrics})
+        y_pred = model.predict(X_test)
+        metrics = evaluate(model, X_test, y_test, y_pred=y_pred)
+        amount_metrics = _amount_metrics(y_test, y_pred)
+        rows.append({"model": name, **metrics, **amount_metrics})
         fitted[name] = model
 
     metrics_df = pd.DataFrame(rows).sort_values(
@@ -237,10 +257,14 @@ def main(write_parquet: bool = True):
             model_r = linear_pipeline(pre_r)
         elif best_name == "DecisionTree":
             model_r = tree_pipeline(pre_r)
+        elif best_name == "RandomForest":
+            model_r = forest_pipeline(pre_r)
         else:
             model_r = linear_pipeline(pre_r)
         model_r.fit(X_train_r, y_train_r)
-        metrics_r = evaluate(model_r, X_test_r, y_test_r)
+        y_pred_r = model_r.predict(X_test_r)
+        metrics_r = evaluate(model_r, X_test_r, y_test_r, y_pred=y_pred_r)
+        amount_metrics_r = _amount_metrics(y_test_r, y_pred_r)
         robust_rows.append(
             {
                 "split": "route_holdout",
@@ -248,6 +272,9 @@ def main(write_parquet: bool = True):
                 "R2": metrics_r["R2"],
                 "RMSE": metrics_r["RMSE"],
                 "MAE": metrics_r["MAE"],
+                "RMSE_amount": amount_metrics_r["RMSE_amount"],
+                "MAE_amount": amount_metrics_r["MAE_amount"],
+                "MAPE_amount": amount_metrics_r["MAPE_amount"],
                 "target": "log_total_amount",
                 "scale": "log",
                 "test_routes": len(test_routes),

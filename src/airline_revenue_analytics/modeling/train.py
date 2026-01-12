@@ -10,6 +10,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
 from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
 
 
 def split_xy(df: pd.DataFrame, y_col: str, test_size: float = 0.3, seed: int = 42):
@@ -64,3 +65,16 @@ def tree_pipeline(pre: ColumnTransformer, **params) -> Pipeline:
     """Decision tree pipeline with conservative defaults. (决策树管线，保守默认参数)"""
     params = {"random_state": 42, "max_depth": 6, "min_samples_leaf": 50, **params}
     return Pipeline([("pre", pre), ("model", DecisionTreeRegressor(**params))])
+
+
+def forest_pipeline(pre: ColumnTransformer, **params) -> Pipeline:
+    """Random forest pipeline with conservative defaults. (随机森林管线，保守默认参数)"""
+    params = {
+        "random_state": 42,
+        "n_estimators": 200,
+        "max_depth": 12,
+        "min_samples_leaf": 20,
+        "n_jobs": -1,
+        **params,
+    }
+    return Pipeline([("pre", pre), ("model", RandomForestRegressor(**params))])

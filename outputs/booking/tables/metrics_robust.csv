@@ -1,0 +1,2 @@
+split,model,R2,RMSE,MAE,RMSE_amount,MAE_amount,MAPE_amount,target,scale,test_routes,test_rows
+route_holdout,RandomForest,0.966,0.149,0.077,9133.645,4425.733,7.821,log_total_amount,log,91,79799

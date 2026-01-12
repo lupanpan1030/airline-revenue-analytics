@@ -7,9 +7,15 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from sklearn.pipeline import Pipeline
 
 
-def evaluate(model: Pipeline, X_test: pd.DataFrame, y_test: pd.Series) -> Dict[str, float]:
+def evaluate(
+    model: Pipeline,
+    X_test: pd.DataFrame,
+    y_test: pd.Series,
+    y_pred: pd.Series | None = None,
+) -> Dict[str, float]:
     """Evaluate model performance with R2/RMSE/MAE. (使用 R2/RMSE/MAE 评估模型表现)"""
-    y_pred = model.predict(X_test)
+    if y_pred is None:
+        y_pred = model.predict(X_test)
     mse = mean_squared_error(y_test, y_pred)
     return {
         "R2": float(r2_score(y_test, y_pred)),

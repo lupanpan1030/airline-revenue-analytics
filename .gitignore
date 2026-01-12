@@ -54,6 +54,7 @@ pip-wheel-metadata/
 /data/raw/**
 !/data/raw/
 !/data/raw/README.md
+/data/raw/airlines_db.sqlite
 *.db
 *.sqlite
 *.parquet
@@ -65,6 +66,7 @@ pip-wheel-metadata/
 !/outputs/booking/figures/**
 !/outputs/booking/tables/
 !/outputs/booking/tables/metrics.csv
+!/outputs/booking/tables/metrics_robust.csv
 !/outputs/segment/
 !/outputs/segment/figures/
 !/outputs/segment/figures/**

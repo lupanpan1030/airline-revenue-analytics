@@ -1,3 +1,4 @@
-model,R2,RMSE,MAE,target,scale
-DecisionTree,0.9774669777139947,0.12968060962249536,0.08089435562453877,log_total_amount,log
-LinearRegression,0.9212978723244388,0.24235866805920905,0.18219548349325404,log_total_amount,log
+model,R2,RMSE,MAE,MAE_amount,RMSE_amount,MAPE_amount,target,scale
+RandomForest,0.988,0.095,0.043,4047.629,12031.469,4.508,log_total_amount,log
+DecisionTree,0.977,0.130,0.081,7412.870,17595.634,8.454,log_total_amount,log
+LinearRegression,0.921,0.242,0.182,16946.369,48621.514,19.622,log_total_amount,log
