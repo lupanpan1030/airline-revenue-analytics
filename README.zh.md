@@ -12,15 +12,16 @@
 | Model | Role | R2 (log) | RMSE (log) | MAE (log) |
 | --- | --- | --- | --- | --- |
 | LinearRegression | Baseline | 0.921 | 0.242 | 0.182 |
-| DecisionTree | Best | 0.977 | 0.130 | 0.081 |
+| RandomForest | Best | 0.988 | 0.095 | 0.043 |
+| DecisionTree | Comparator | 0.977 | 0.130 | 0.081 |
 
-结论：DecisionTree 在 log 尺度上明显优于线性基线（R2 +0.056、RMSE -0.113、MAE -0.101），主要来自对**行程时长与舱位/路线复杂度的非线性关系**的捕捉。
+结论：RandomForest 在 log 尺度上明显优于线性基线（R2 +0.067、RMSE -0.147、MAE -0.139），主要来自对**行程时长与舱位/路线复杂度的非线性关系**的捕捉。
 
 ## Robustness Check（路线留出）
 | Split | R2 (log) | RMSE (log) | MAE (log) | Notes |
 | --- | --- | --- | --- | --- |
-| Random split (by `book_ref`) | 0.977 | 0.130 | 0.081 | DecisionTree (best) |
-| Route hold-out (unseen `primary_route_code`) | 0.966 | 0.146 | 0.094 | 91 routes held out (~30% rows) |
+| Random split (by `book_ref`) | 0.988 | 0.095 | 0.043 | RandomForest (best) |
+| Route hold-out (unseen `primary_route_code`) | 0.966 | 0.149 | 0.077 | 91 routes held out (~30% rows) |
 
 解读：路线留出仅小幅下降，说明模型不是简单记忆路线，对未见航线仍有较强泛化能力。
 
@@ -83,7 +84,7 @@ repo_root/
 | 粒度 | Booking-level（聚合） | Segment-level（单航段） |
 | 目标 | `total_amount` / `log_total_amount` | `amount`（单航段票价） |
 | 主要特征 | 旅程汇总指标（次数/时长/路线） | 航段特征（时间/舱位/机型/路线） |
-| 模型 | Linear + Tree 基线 | Linear + Tree 基线 |
+| 模型 | Linear + Tree + RandomForest 基线 | Linear + Tree 基线 |
 | 输出 | `outputs/booking/` | `outputs/segment/` |
 | 适用场景 | 业务汇总与可解释展示 | 特征工程附录 |
 
@@ -93,7 +94,7 @@ repo_root/
 - 目标变量：`log_total_amount`（对 `total_amount` 取对数）
 - 指标尺度：log 尺度
 - 切分策略：按 `book_ref` 分组，固定随机种子
-- 随机性控制：`numpy/random=42`，`DecisionTree random_state=42`
+- 随机性控制：`numpy/random=42`，`DecisionTree/RandomForest random_state=42`
 
 ## Notebooks（叙事型）
 - `notebooks/booking/`：主线叙事型 notebooks（推荐）

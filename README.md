@@ -12,15 +12,16 @@ This repo provides a **primary deliverable** and an **optional appendix**:
 | Model | Role | R2 (log) | RMSE (log) | MAE (log) |
 | --- | --- | --- | --- | --- |
 | LinearRegression | Baseline | 0.921 | 0.242 | 0.182 |
-| DecisionTree | Best | 0.977 | 0.130 | 0.081 |
+| RandomForest | Best | 0.988 | 0.095 | 0.043 |
+| DecisionTree | Comparator | 0.977 | 0.130 | 0.081 |
 
-Conclusion: DecisionTree clearly outperforms the linear baseline on log scale (R2 +0.056, RMSE -0.113, MAE -0.101), driven by nonlinear effects of itinerary duration and cabin/route complexity.
+Conclusion: RandomForest clearly outperforms the linear baseline on log scale (R2 +0.067, RMSE -0.147, MAE -0.139), driven by nonlinear effects of itinerary duration and cabin/route complexity.
 
 ## Robustness Check (Route Hold-out)
 | Split | R2 (log) | RMSE (log) | MAE (log) | Notes |
 | --- | --- | --- | --- | --- |
-| Random split (by `book_ref`) | 0.977 | 0.130 | 0.081 | DecisionTree (best) |
-| Route hold-out (unseen `primary_route_code`) | 0.966 | 0.146 | 0.094 | 91 routes held out (~30% rows) |
+| Random split (by `book_ref`) | 0.988 | 0.095 | 0.043 | RandomForest (best) |
+| Route hold-out (unseen `primary_route_code`) | 0.966 | 0.149 | 0.077 | 91 routes held out (~30% rows) |
 
 Interpretation: Only a small drop on route hold-out suggests the model is not just memorizing routes and still generalizes to unseen routes.
 
@@ -83,7 +84,7 @@ repo_root/
 | Granularity | Booking-level (aggregated) | Segment-level (single leg) |
 | Target | `total_amount` / `log_total_amount` | `amount` (segment fare) |
 | Features | Itinerary aggregates (counts/durations/routes) | Segment features (time/cabin/aircraft/route) |
-| Models | Linear + Tree baselines | Linear + Tree baselines |
+| Models | Linear + Tree + RandomForest baselines | Linear + Tree baselines |
 | Outputs | `outputs/booking/` | `outputs/segment/` |
 | Use case | Business summary & interpretation | Feature engineering appendix |
 
@@ -93,7 +94,7 @@ repo_root/
 - Target: `log_total_amount` (log of `total_amount`).
 - Metrics: reported on log scale.
 - Split: fixed random seed, grouped by `book_ref`.
-- Randomness: `numpy/random=42`, `DecisionTree random_state=42`.
+- Randomness: `numpy/random=42`, `DecisionTree/RandomForest random_state=42`.
 
 ## Notebooks
 - `notebooks/booking/`: main narrative notebooks (recommended).
