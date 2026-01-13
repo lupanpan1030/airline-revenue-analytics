@@ -97,6 +97,7 @@ repo_root/
 - 随机性控制：`numpy/random=42`，`DecisionTree/RandomForest random_state=42`
 
 ## Notebooks（叙事型）
+- `notebooks/portfolio_report.ipynb`：只读主展示报告（从 `outputs/booking/*` 读取；先跑 `python pipelines/run_booking.py`）
 - `notebooks/booking/`：主线叙事型 notebooks（推荐）
 - `notebooks/segment/`：旧线单体 notebooks（附录）
 - Notebook 依赖：`pip install -e .[notebook]` 或 `pip install -r requirements-notebook.txt`

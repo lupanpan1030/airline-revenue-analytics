@@ -97,6 +97,7 @@ repo_root/
 - Randomness: `numpy/random=42`, `DecisionTree/RandomForest random_state=42`.
 
 ## Notebooks
+- `notebooks/portfolio_report.ipynb`: read-only 3-minute summary built from `outputs/booking/*` (run `python pipelines/run_booking.py` first).
 - `notebooks/booking/`: main narrative notebooks (recommended).
 - `notebooks/segment/`: legacy segment notebooks (appendix).
 - Notebook deps: `pip install -e .[notebook]` or `pip install -r requirements-notebook.txt`.
